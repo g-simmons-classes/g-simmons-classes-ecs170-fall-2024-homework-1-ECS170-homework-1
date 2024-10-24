@@ -22,9 +22,19 @@ class TilesNode:
     ):
         self.state = state
         self.parent = parent
+        self.goal_state=[[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 0]]
+
 
     def is_goal(self) -> bool:
-        raise NotImplementedError("Implement this function as part of the assignment.")
+        '''check correct state of the node
+        '''
+
+        if(self.state==self.goal_state):
+            return True
+        else:
+            return False
+        
+        #raise NotImplementedError("Implement this function as part of the assignment.")
 
     def find_empty_space(self) -> tuple[int, int]:
         """Helper function to find the empty space in the current state.
@@ -59,7 +69,31 @@ class TilesNode:
         return new_state
 
     def get_children(self) -> list["TilesNode"]:
-        raise NotImplementedError("Implement this function as part of the assignment.")
+
+        '''get path of from the current node state to the empty spaces , check if it is solvable  and then swap space for each available empty space 
+        update the parent 
+         '''   
+        empty_space=self.find_empty_space()
+        new_list=[]
+       # print(empty_space)
+        if(empty_space!=None):
+            if (empty_space[0]-1>=0): #swap up
+                new_state=self.swap_tiles(empty_space[0],empty_space[1],empty_space[0]-1,empty_space[1])
+                new_list.append(TilesNode(new_state,self))
+                #print(new_state)
+            if (empty_space[1]-1>=0) :#swap left
+                new_state=self.swap_tiles(empty_space[0],empty_space[1],empty_space[0],empty_space[1]-1)
+                new_list.append(TilesNode(new_state,self))
+            if ( empty_space[1]+1<len(self.state[0])): #swap right
+                new_state=self.swap_tiles(empty_space[0],empty_space[1],empty_space[0],empty_space[1]+1)
+                new_list.append(TilesNode(new_state,self))
+            if ( empty_space[0]+1<len(self.state)): #swap down
+                new_state=self.swap_tiles(empty_space[0],empty_space[1],empty_space[0]+1,empty_space[1])
+                new_list.append(TilesNode(new_state,self))
+        #print(new_list)
+        return new_list
+    
+        #raise NotImplementedError("Implement this function as part of the assignment.")
 
     def __str__(self):
         return "\n".join(" ".join(map(str, row)) for row in self.state)
@@ -97,7 +131,7 @@ class TilesNode:
 
         You don't need to use this function, but it may be helpful.
         """
-        flat_state = [tile if tile != 0 else 16 for row in self.state for tile in row]
+        flat_state = [tile for row in self.state for tile in row if tile != 0]
 
         inversions = 0
         for i in range(len(flat_state)):
@@ -106,3 +140,7 @@ class TilesNode:
                     inversions += 1
 
         return inversions % 2 == 0
+'''if __name__=="__main__":
+    print('hello world')
+    TilesNode([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 0]]).get_children()
+    '''
